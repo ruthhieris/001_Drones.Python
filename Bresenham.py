@@ -10,7 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 get_ipython().run_line_magic('matplotlib', 'inline')
 plt.rcParams['figure.figsize'] = 12, 12
-print("Meow")
+#print("Meow")
 
 
 # Your task is to implement the bresenham function given two points $p_1$ and $p_2$ as inputs. The function should return the list of grid cells required to draw the line.
@@ -88,9 +88,9 @@ def bres(p1, p2):
     i = x1
     j = y1    
     while abs(i-x1) <= abs(dx) and abs(j-y1) <= abs(dy):  
-        print('x,y',(i,j), abs(i-x1), abs(dx),abs(j-y1), abs(dy))
+#        print('x,y',(i,j), abs(i-x1), abs(dx),abs(j-y1), abs(dy))
         cells.append([i,j])
-        print('cells',cells)
+#        print('cells',cells)
         if dx == 0 or dy == 0:
             cells.append([i - x_st*y_move, j - y_st*x_move])
         elif s*d < s*(y_st * dx - x_st * dy - b * dx):
@@ -103,14 +103,14 @@ def bres(p1, p2):
             #(x+1)m+b < y+1 => __/ x += 1, dy>0
             #OR 
             #(x-1)m+b < y-1 => y -= 1, dy<0
-            print('<')
+#            print('<')
             x_move = (abs(dy) + dy)//(2 * abs(dy)) #1 in case dy>0
             y_move = (abs(dy) - dy)//(2 * abs(dy)) #1 in case dy<0
         elif s*d > s*(y_st * dx - x_st * dy - b * dx):
             #(x+1)m+b > y+1 => __/ y += 1, dy>0
             #OR 
             #(x-1)m+b > y-1 => x -= 1, dy<0
-            print('>')
+#            print('>')
             x_move = (abs(dy) - dy)//(2 * abs(dy))
             y_move = (abs(dy) + dy)//(2 * abs(dy))
             #print('ij',i,j,'xmv,ymv',x_move,y_move,'ix1,jy1',i-x1,j-y1) 
@@ -118,7 +118,7 @@ def bres(p1, p2):
             # uncomment these two lines for conservative approach
             cells.append([i + x_st, j])
             cells.append([i, j + y_st])
-            print('=',s*d,s*(- b))
+#            print('=',s*d,s*(- b))
             x_move = 1
             y_move = 1
         else:
@@ -146,7 +146,7 @@ def line_in_cells_plt(p1, p2, cells):
     plt.plot([p1[0], p2[0]], [p1[1], p2[1]])
 
     for q in cells:
-        print(q)
+#        print(q)
         plt.plot([q[0], q[0]+x_st], [q[1], q[1]], 'k')
         plt.plot([q[0], q[0]+x_st], [q[1]+y_st, q[1]+y_st], 'k')
         plt.plot([q[0], q[0]], [q[1],q[1]+y_st], 'k')

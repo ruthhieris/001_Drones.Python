@@ -39,7 +39,7 @@ filename = 'colliders.csv'
 # Note: the first line contains the latitude and longitude of map center
 # Where is this??
 data = np.loadtxt(filename,delimiter=',',dtype='Float64',skiprows=2)
-print(data)
+#print(data)
 # Static drone altitude (metres)
 drone_altitude = 15
 
@@ -70,9 +70,9 @@ def create_grid(data, drone_altitude, safety_distance):
     # Initialize an empty grid
     grid = np.zeros((north_size, east_size))
     # Center offset for grid
-    north_min_center = np.min(data[:, 0])
-    east_min_center = np.min(data[:, 1])
-    print(north_min_center,east_min_center)
+#    north_min_center = np.min(data[:, 0])
+#    east_min_center = np.min(data[:, 1])
+#    print(north_min_center,east_min_center)
 
     ###########Like this one more##########3
         # Populate the grid with obstacles
