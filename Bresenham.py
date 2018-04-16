@@ -8,7 +8,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-get_ipython().run_line_magic('matplotlib', 'inline')
+#get_ipython().run_line_magic('matplotlib', 'inline')
 plt.rcParams['figure.figsize'] = 12, 12
 #print("Meow")
 
@@ -45,6 +45,7 @@ plt.rcParams['figure.figsize'] = 12, 12
 
 
 def bres(p1, p2): 
+    import math
     """
     Extended method for any p1 and p2
     """
@@ -53,14 +54,24 @@ def bres(p1, p2):
     # First, set dx = x2 - x1 and dy = y2 - y1
     dx, dy = x2 - x1, y2 - y1
     try:
-        x_st = dx//abs(dx)
+        x_st = dx//abs(dx) #Floor division
     except ZeroDivisionError:
         x_move = 0
         y_move = 1
         x_st = 1
+    #Creepy Jupyter gets nan when dividing 0.0/0.0 in try block
+    if math.isnan(x_st):
+        x_move = 0
+        y_move = 1
+        x_st = 1
+        
     try:
         y_st = dy//abs(dy)
     except ZeroDivisionError:
+        y_move = 0
+        x_move = 1
+        y_st = 1
+    if math.isnan(y_st):
         y_move = 0
         x_move = 1
         y_st = 1
@@ -73,6 +84,9 @@ def bres(p1, p2):
         b = y2 - m * x2
         s = dx/abs(dx) #sign to multipy without replacing < with >
     except ZeroDivisionError:
+        b = 0
+        s = 1
+    if math.isnan(s):
         b = 0
         s = 1
     # The condition we care about is whether 

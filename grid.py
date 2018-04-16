@@ -31,6 +31,9 @@ either a 0 or 1 representing feasible or infeasible (obstacle) spaces respective
 """
 import numpy as np 
 import matplotlib.pyplot as plt
+from scipy.spatial import Voronoi, voronoi_plot_2d
+import math
+from Bresenham import bres
 
 #%matplotlib inline
 plt.rcParams["figure.figsize"] = [12, 12]
@@ -88,6 +91,85 @@ def create_grid(data, drone_altitude, safety_distance):
             grid[obstacle[0]:obstacle[1]+1, obstacle[2]:obstacle[3]+1] = 1
 
     return grid
+
+# Here you'll modify the `create_grid()` method from a previous exercise
+# In this new function you'll record obstacle centres and
+# create a Voronoi graph around those points
+def create_grid_and_edges(data, drone_altitude, safety_distance):
+    """
+    Returns a grid representation of a 2D configuration space
+    along with Voronoi graph edges given obstacle data and the
+    drone's altitude.
+    """
+
+    # minimum and maximum north coordinates
+    north_min = np.floor(np.min(data[:, 0] - data[:, 3]))
+    north_max = np.ceil(np.max(data[:, 0] + data[:, 3]))
+
+    # minimum and maximum east coordinates
+    east_min = np.floor(np.min(data[:, 1] - data[:, 4]))
+    east_max = np.ceil(np.max(data[:, 1] + data[:, 4]))
+
+    # given the minimum and maximum coordinates we can
+    # calculate the size of the grid.
+    north_size = int(np.ceil((north_max - north_min)))
+    east_size = int(np.ceil((east_max - east_min)))
+
+    # Initialize an empty grid
+    grid = np.zeros((north_size, east_size))
+    # Center offset for grid
+    north_min_center = np.min(data[:, 0])
+    east_min_center = np.min(data[:, 1])
+    
+    # Define a list to hold Voronoi points
+    points = []
+    # Populate the grid with obstacles
+    for i in range(data.shape[0]):
+        north, east, alt, d_north, d_east, d_alt = data[i, :]
+
+        if alt + d_alt + safety_distance > drone_altitude:
+            obstacle = [
+                int(north - d_north - safety_distance - north_min_center),
+                int(north + d_north + safety_distance - north_min_center),
+                int(east - d_east - safety_distance - east_min_center),
+                int(east + d_east + safety_distance - east_min_center),
+            ]
+            grid[obstacle[0]:obstacle[1]+1, obstacle[2]:obstacle[3]+1] = 1
+            
+            # add center of obstacles to points list
+            points.append([north - north_min, east - east_min])
+
+    # TODO: create a voronoi graph based on
+    # location of obstacle centres
+    graph = Voronoi(points)
+    voronoi_plot_2d(graph)
+    plt.show()
+    #print(points)
+    # TODO: check each edge from graph.ridge_vertices for collision
+    edges = []
+    for v in graph.ridge_vertices:
+        p1 = graph.vertices[v[0]]
+        p2 = graph.vertices[v[1]]
+        p1_gr = [int(round(x)) for x in p1]
+        p2_gr = [int(round(x)) for x in p2]
+        p = [p1_gr,p2_gr]
+        #print(p1, p1_grid, p2, p2_grid)
+    
+        in_collision = True
+        if np.amin(p) > 0 and np.amax(p[:][0]) < grid.shape[0] and np.amax(p[:][1]) < grid.shape[1]:
+            track = bres(p1_gr,p2_gr)
+            for q in track:
+                #print(q)
+                q = [int(x) for x in q]
+                if grid[q[0],q[1]] == 1:
+                    in_collision = True
+                    break
+                else:
+                    in_collision = False
+        if not in_collision:
+            edges.append((p1,p2))
+
+    return grid, edges
 
     """
     # Populate the grid with obstacles

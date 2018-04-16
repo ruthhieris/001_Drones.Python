@@ -22,10 +22,14 @@ class Action(Enum):
     to the current grid position. The third and final value
     is the cost of performing the action.
     """
-    LEFT = (0, -1, 1)
-    RIGHT = (0, 1, 1)
-    UP = (-1, 0, 1)
-    DOWN = (1, 0, 1)
+    WEST = (0, -1, 1)
+    EAST = (0, 1, 1)
+    NORTH = (-1, 0, 1)
+    SOUTH = (1, 0, 1)
+    NORTH_WEST = (-1, -1, np.sqrt(2))
+    NORTH_EAST = (-1, 1, np.sqrt(2))
+    SOUTH_WEST = (1, -1, np.sqrt(2))
+    SOUTH_EAST = (1, 1, np.sqrt(2))
     
     def __str__(self):
         if self == self.LEFT:
@@ -50,7 +54,7 @@ def valid_actions(grid, current_node):
     """
     Returns a list of valid actions given a grid and current node.
     """
-    valid = [Action.UP, Action.LEFT, Action.RIGHT, Action.DOWN]
+    valid = list(Action)
     n, m = grid.shape[0] - 1, grid.shape[1] - 1
     x, y = current_node
     
@@ -58,13 +62,22 @@ def valid_actions(grid, current_node):
     # it's an obstacle
     
     if x - 1 < 0 or grid[x-1, y] == 1:
-        valid.remove(Action.UP)
+        valid.remove(Action.NORTH)
     if x + 1 > n or grid[x+1, y] == 1:
-        valid.remove(Action.DOWN)
+        valid.remove(Action.SOUTH)
     if y - 1 < 0 or grid[x, y-1] == 1:
-        valid.remove(Action.LEFT)
+        valid.remove(Action.WEST)
     if y + 1 > m or grid[x, y+1] == 1:
-        valid.remove(Action.RIGHT)
+        valid.remove(Action.EAST)
+        
+    if (x - 1 < 0 or y - 1 < 0) or grid[x-1,y-1] == 1:
+        valid.remove(Action.NORTH_WEST)
+    if (x - 1 < 0 or y + 1 > m) or grid[x-1,y+1] == 1:
+        valid.remove(Action.NORTH_EAST)
+    if (x + 1 > n or y - 1 < 0) or grid[x+1,y-1] == 1:
+        valid.remove(Action.SOUTH_WEST)
+    if (x + 1 > n or y + 1 > m) or grid[x+1,y+1] == 1:
+        valid.remove(Action.SOUTH_EAST)
         
     return valid
 
@@ -101,7 +114,9 @@ def heuristic(position, goal_position):
     #h = np.sqrt((position[0] - goal_position[0])**2 + (position[1] - goal_position[1])**2)
     h = abs(position[0] - goal_position[0]) + abs(goal_position[1] - position[1])
     return h
-
+def Eucl_heur(position, goal_position):
+    h = np.sqrt((position[0] - goal_position[0])**2 + (position[1] - goal_position[1])**2)
+    return h
 
 # ## A* search
 # 
@@ -133,8 +148,16 @@ def a_star(grid, h, start, goal):
     
     while not queue.empty():
         item = queue.get()
-        current_cost = item[0]
         current_node = item[1]
+        if current_node == start:
+            current_cost = 0.0
+        else:              
+            current_cost = branch[current_node][0]
+    
+#    while not queue.empty():
+#        item = queue.get()
+#        current_cost = item[0]
+#        current_node = item[1]
 
         if current_node == goal:        
             print('Found a path.')
@@ -144,20 +167,18 @@ def a_star(grid, h, start, goal):
             for action in valid_actions(grid, current_node):
                 # get the tuple representation
                 da = action.delta
-                cost = action.cost
                 next_node = (current_node[0] + da[0], current_node[1] + da[1])
                 # TODO: calculate new cost, c + g() + h()
-                new_cost = current_cost + cost + h(next_node, goal)
+                branch_cost = current_cost + action.cost
+                new_cost = branch_cost + h(next_node, goal)
 #                print(h(next_node,goal))
                 
                 if next_node not in visited:                
                     visited.add(next_node)               
                     queue.put((new_cost, next_node))
-                    
-                    branch[next_node] = (new_cost, current_node, action)
+                    branch[next_node] = (branch_cost, current_node, action)
              
     if found:
-        
         # retrace steps
         path = []
         n = goal
@@ -170,7 +191,6 @@ def a_star(grid, h, start, goal):
         print('**********************')
         print('Failed to find a path!')
         print('**********************') 
-            
     return path[::-1], path_cost
 
 
