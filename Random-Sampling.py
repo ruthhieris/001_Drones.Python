@@ -135,7 +135,9 @@ samples[:10]
 
 # ## Removing Points Colliding With Obstacles
 # 
-# Prior to remove a point we must determine whether it collides with any obstacle. Complete the `collides` function below. It should return `True` if the point collides with *any* obstacle and `False` if no collision is detected.
+# Prior to remove a point we must determine whether it collides with any obstacle. 
+#Complete the `collides` function below. It should return `True` if the point 
+#collides with *any* obstacle and `False` if no collision is detected.
 
 # In[58]:
 

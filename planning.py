@@ -9,6 +9,7 @@
 from queue import PriorityQueue
 import numpy as np
 from enum import Enum
+import numpy.linalg as LA
 
 
 # In[10]:
@@ -117,6 +118,9 @@ def heuristic(position, goal_position):
 def Eucl_heur(position, goal_position):
     h = np.sqrt((position[0] - goal_position[0])**2 + (position[1] - goal_position[1])**2)
     return h
+def heuristic_eucl(n1, n2):
+    """Euclidian distance"""
+    return LA.norm(np.array(n2) - np.array(n1))
 
 # ## A* search
 # 
@@ -195,32 +199,86 @@ def a_star(grid, h, start, goal):
 
 
 # In[23]:
+    
+#TODO: modify A* to work with a graph
+def a_star_graph(graph, h, start, goal):
+    """path, cost = a_star_graph(networkx.Graph(), heuristic_func,
+                    tuple(skel_start), tuple(skel_goal))
+        INPUT: start, goal = tuple(x,y)
+        """
+    path = []
+    path_cost = 0
+    queue = PriorityQueue()
+    queue.put((0, start))
+    visited = set(start)
 
+    branch = {}
+    found = False
+    
+    while not queue.empty():
+        item = queue.get()
+        current_node = item[1]
+        if current_node == start:
+            current_cost = 0.0
+        else:              
+            current_cost = branch[current_node][0]
+            
+        if current_node == goal:        
+            print('Found a path.')
+            found = True
+            break
+        else:
+            for next_node in graph[current_node]:
+                cost = graph.edges[current_node, next_node]['weight']
+                branch_cost = current_cost + cost
+                queue_cost = branch_cost + h(next_node, goal)
+                
+                if next_node not in visited:                
+                    visited.add(next_node)
+                    branch[next_node] = (branch_cost, current_node)
+                    queue.put((queue_cost, next_node))
+    if found:
+        # retrace steps
+        n = goal
+        path_cost = branch[n][0]
+        path.append(goal)
+        while branch[n][1] != start:
+            path.append(branch[n][1])
+            n = branch[n][1]
+        path.append(branch[n][1])
+    else:
+        print('**********************')
+        print('Failed to find a path!')
+        print('**********************') 
+    return path[::-1], path_cost
 
-start = (0, 0)
-goal = (4, 4)
-
-grid = np.array([
-    [0, 1, 0, 0, 0, 0],
-    [0, 0, 0, 0, 1, 0],
-    [0, 1, 0, 0, 1, 0],
-    [0, 0, 0, 1, 1, 0],
-    [0, 0, 0, 1, 0, 0],
-])
-
-
-# In[24]:
-
-
-path, cost = a_star(grid, heuristic, start, goal)
-print(path, cost)
-
-
-# In[25]:
-
-
-# S -> start, G -> goal, O -> obstacle
-#visualize_path(grid, path, start)
-
-
-# [Solution](/notebooks/A-Star-Solution.ipynb)
+    # In[24]:
+    
+if __name__ == "__main__":
+    start = (0, 0)
+    goal = (4, 4)
+    
+    grid = np.array([
+        [0, 1, 0, 0, 0, 0],
+        [0, 0, 0, 0, 1, 0],
+        [0, 1, 0, 0, 1, 0],
+        [0, 0, 0, 1, 1, 0],
+        [0, 0, 0, 1, 0, 0],
+    ])
+    
+    
+    # In[24]:
+    
+    
+    path, cost = a_star(grid, heuristic, start, goal)
+    print(path, cost)
+    
+    
+    # In[25]:
+    
+    
+    # S -> start, G -> goal, O -> obstacle
+    #visualize_path(grid, path, start)
+    
+    
+    # [Solution](/notebooks/A-Star-Solution.ipynb)

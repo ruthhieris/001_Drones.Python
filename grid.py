@@ -55,6 +55,7 @@ def create_grid(data, drone_altitude, safety_distance):
     Returns a grid representation of a 2D configuration space
     based on given obstacle data, drone altitude and safety distance
     arguments.
+    Input: data, drone_altitude, safety_distance
     """
 
     # minimum and maximum north coordinates
@@ -196,14 +197,14 @@ def obstacle_formation(grid, gr_north, gr_east,
         #print(np.nonzero(grid))
     return grid
     """
-
-grid = create_grid(data, drone_altitude, safe_distance)
- # equivalent to
-# plt.imshow(np.flip(grid, 0))
-# NOTE: we're placing the origin in the lower lefthand corner here
-# so that north is up, if you didn't do this north would be positive down
-plt.imshow(grid, origin='lower') 
-
-plt.xlabel('EAST')
-plt.ylabel('NORTH')
-plt.show()
+if __name__ == "__main__":
+    grid = create_grid(data, drone_altitude, safe_distance)
+     # equivalent to
+    # plt.imshow(np.flip(grid, 0))
+    # NOTE: we're placing the origin in the lower lefthand corner here
+    # so that north is up, if you didn't do this north would be positive down
+    plt.imshow(grid, origin='lower') 
+    
+    plt.xlabel('EAST')
+    plt.ylabel('NORTH')
+    plt.show()
