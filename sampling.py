@@ -29,9 +29,9 @@ from sklearn import neighbors
 
 class Sampler():
     
-    def __init__(self, data, zlim = 10):
+    def __init__(self, data, zlim = 10, safety_distance = 0):
         self._zmax = zlim
-        self._polygons = self.extract_polygons(data)
+        self._polygons = self.extract_polygons(data, safety_distance)
         self.__d = data
         
     @property
@@ -99,40 +99,42 @@ class Sampler():
     #Currently we don't know suitable ranges for x, y, and z. 
     #Let's figure out the max and min values for each dimension.
     
-        xmin = np.min(data[:, 0] - data[:, 3])
-        xmax = np.max(data[:, 0] + data[:, 3])
+        nmin = np.min(data[:, 0] - data[:, 3])
+        nmax = np.max(data[:, 0] + data[:, 3])
         
-        ymin = np.min(data[:, 1] - data[:, 4])
-        ymax = np.max(data[:, 1] + data[:, 4])
+        emin = np.min(data[:, 1] - data[:, 4])
+        emax = np.max(data[:, 1] + data[:, 4])
         
         zmin = 0
         # Limit the z axis for the visualization
         zmax = z_lim #np.max(data[:,2] + data[:,5] + 10) #10
         
         if explicit:
-            print("X")
-            print("min = {0}, max = {1}\n".format(xmin, xmax))
+            print("N")
+            print("min = {0}, max = {1}\n".format(nmin, nmax))
             
-            print("Y")
-            print("min = {0}, max = {1}\n".format(ymin, ymax))
+            print("E")
+            print("min = {0}, max = {1}\n".format(emin, emax))
             
             print("Z")
             print("min = {0}, max = {1}".format(zmin, zmax))
+            print()
             
         # Next, it's time to sample points. All that's left is picking the 
         #distribution and number of samples. The uniform distribution makes 
         #sense in this situation since we we'd like to encourage searching the whole space.
             
         #np.random.seed(0)
-        xvals = np.random.uniform(xmin, xmax, num_samples)
-        yvals = np.random.uniform(ymin, ymax, num_samples)
+        nvals = np.random.uniform(nmin, nmax, num_samples)
+        evals = np.random.uniform(emin, emax, num_samples)
         zvals = np.random.uniform(zmin, zmax, num_samples)
         
-        return list(zip(xvals, yvals, zvals))
+        return list(zip(nvals, evals, zvals))
 
 
     @staticmethod
-    def extract_polygons(data):
+    def extract_polygons(data, sdist = 0):
+        """Polygons with or without safety_distance"""
         polygons = []
         for i in range(data.shape[0]):
             north, east, alt, d_north, d_east, d_alt = data[i, :]
@@ -144,14 +146,14 @@ class Sampler():
             #
             # If the area of the polygon is 0 you've likely got a weird
             # order.
-            p1 = (north + d_north, east - d_east)
-            p2 = (north + d_north, east + d_east)
-            p3 = (north - d_north, east + d_east)
-            p4 = (north - d_north, east - d_east)
+            p1 = (north + d_north + sdist, east - d_east - sdist)
+            p2 = (north + d_north + sdist, east + d_east + sdist)
+            p3 = (north - d_north - sdist, east + d_east + sdist)
+            p4 = (north - d_north - sdist, east - d_east - sdist)
             corners = [p1, p2, p3, p4]
             
             # TODO: Compute the height of the polygon
-            height = alt + d_alt
+            height = alt + d_alt + sdist
     
             # TODO: Once you've defined corners, define polygons
             polygons.append(Poly(corners, height))
@@ -177,7 +179,6 @@ class Poly():
         True if the geometries cross paths.
         Use LineString to create a line. """
         return self.p.crosses(line)
-
 
 
 # In[62]:
