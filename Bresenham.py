@@ -9,7 +9,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 #get_ipython().run_line_magic('matplotlib', 'inline')
-plt.rcParams['figure.figsize'] = 12, 12
+
 #print("Meow")
 
 
@@ -178,53 +178,55 @@ def line_in_cells_plt(p1, p2, cells):
 # Plotting the line with the cells which it crosses. 
 
 # In[17]:
-
-
-p1 = (4,4)
-p2 = (-9,4)
-
-cells = bres(p1, p2)
-#print(cells)
-line_in_cells_plt(p1,p2,cells)
-
-
-# Check out our solution [here](/notebooks/Bresenham-Solution.ipynb).
-
-# ### Python Bresenham Package
-# For comparison let's have a look at the Python Bresenham package! As mentioned above, if you've added a safety margin around obstacles you are probably fine using this package or one like it that misses some cells in collision with the line.
-# 
-# First we need to import it:
-
-# In[65]:
-
-
-from bresenham import bresenham
-
-
-# Next we can run the same experiment as above and plot it up.
-
-# In[66]:
-
-
-# Note: you can run this for any (x1, y1, x2, y2)
-line = (0, 0, 7, 5)
-
-cells = list(bresenham(line[0], line[1], line[2], line[3]))
-print(cells)
-
-plt.plot([line[0], line[2]], [line[1], line[3]])
-
-
-for q in cells:
-    plt.plot([q[0], q[0]+1], [q[1], q[1]], 'k')
-    plt.plot([q[0], q[0]+1], [q[1]+1, q[1]+1], 'k')
-    plt.plot([q[0], q[0]], [q[1],q[1]+1], 'k')
-    plt.plot([q[0]+1, q[0]+1], [q[1], q[1]+1], 'k')
-
-plt.grid()
-plt.axis('equal')
-plt.xlabel("X")
-plt.ylabel("Y")
-plt.title("Python package Bresenham algorithm")
-plt.show()
-
+if __name__ == "__main__":
+    
+    plt.rcParams['figure.figsize'] = 12, 12
+    
+    p1 = (4,4)
+    p2 = (-9,4)
+    
+    cells = bres(p1, p2)
+    #print(cells)
+    line_in_cells_plt(p1,p2,cells)
+    
+    
+    # Check out our solution [here](/notebooks/Bresenham-Solution.ipynb).
+    
+    # ### Python Bresenham Package
+    # For comparison let's have a look at the Python Bresenham package! As mentioned above, if you've added a safety margin around obstacles you are probably fine using this package or one like it that misses some cells in collision with the line.
+    # 
+    # First we need to import it:
+    
+    # In[65]:
+    
+    
+    from bresenham import bresenham
+    
+    
+    # Next we can run the same experiment as above and plot it up.
+    
+    # In[66]:
+    
+    
+    # Note: you can run this for any (x1, y1, x2, y2)
+    line = (0, 0, 7, 5)
+    
+    cells = list(bresenham(line[0], line[1], line[2], line[3]))
+    print(cells)
+    
+    plt.plot([line[0], line[2]], [line[1], line[3]])
+    
+    
+    for q in cells:
+        plt.plot([q[0], q[0]+1], [q[1], q[1]], 'k')
+        plt.plot([q[0], q[0]+1], [q[1]+1, q[1]+1], 'k')
+        plt.plot([q[0], q[0]], [q[1],q[1]+1], 'k')
+        plt.plot([q[0]+1, q[0]+1], [q[1], q[1]+1], 'k')
+    
+    plt.grid()
+    plt.axis('equal')
+    plt.xlabel("X")
+    plt.ylabel("Y")
+    plt.title("Python package Bresenham algorithm")
+    plt.show()
+    
