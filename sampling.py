@@ -33,6 +33,7 @@ class Sampler():
         self._zmax = zlim
         self._polygons = self.extract_polygons(data, safety_distance)
         self.__d = data
+        self.NElimits(data)
         
     @property
     def _zmax(self):
@@ -44,6 +45,27 @@ class Sampler():
             self.__zmax = 0
         else:
             self.__zmax = zlim
+            
+    def NElimits(self,data):
+        self._nmin = self.datalimits(data)[0]
+        self._nmax = self.datalimits(data)[1]
+        
+        self._emin = self.datalimits(data)[2]
+        self._emax = self.datalimits(data)[3]
+        self._zmin = 0
+        
+    @staticmethod
+    def datalimits(data):
+        """
+        set data borders
+        Input: data
+        Output: (nmin, nmax, emin, emax)
+        """
+        nmin = np.min(data[:, 0] - data[:, 3])
+        nmax = np.max(data[:, 0] + data[:, 3])
+        emin = np.min(data[:, 1] - data[:, 4])
+        emax = np.max(data[:, 1] + data[:, 4])
+        return nmin, nmax, emin, emax
         
     def sample(self,num_samp):
         """

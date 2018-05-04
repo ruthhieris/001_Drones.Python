@@ -44,7 +44,7 @@ import matplotlib.pyplot as plt
 # In[11]:
 
 
-def bres(p1, p2): 
+def bres(p1, p2, conservative = True): 
     import math
     """
     Extended method for any p1 and p2
@@ -130,8 +130,9 @@ def bres(p1, p2):
             #print('ij',i,j,'xmv,ymv',x_move,y_move,'ix1,jy1',i-x1,j-y1) 
         elif s*d == s*(y_st * dx - x_st * dy - b * dx): 
             # uncomment these two lines for conservative approach
-            cells.append([i + x_st, j])
-            cells.append([i, j + y_st])
+            if conservative:
+                cells.append([i + x_st, j])
+                cells.append([i, j + y_st])
 #            print('=',s*d,s*(- b))
             x_move = 1
             y_move = 1
