@@ -99,10 +99,16 @@ def visualize_path(grid, path, start):
 
 
 # ## Heuristics
-# The heuristic function determines the $h()$ value for each cell based on the goal cell and the method chosen to determine it. The heuristic value can be the Euclidean distance between these cells $h= \left((x_i-x_{goal})^2+(y_i-y_{goal})^2\right)^{1/2}$ or the "Manhattan distance", which is the minimum number of moves required to reach the goal from the assigned cell $h = ||x_i-x_{goal}|| + ||y_i-y_{goal}||$. For this exercise you could use either, or something else which is *admissible* and *consistent*.
+# The heuristic function determines the $h()$ value for each cell based on the goal 
+# cell and the method chosen to determine it. The heuristic value can be the Euclidean 
+# distance between these cells $h= \left((x_i-x_{goal})^2+(y_i-y_{goal})^2\right)^{1/2}$ 
+# or the "Manhattan distance", which is the minimum number of moves required to reach the goal 
+# from the assigned cell $h = ||x_i-x_{goal}|| + ||y_i-y_{goal}||$. 
+# For this exercise you could use either, or something else which is *admissible* and *consistent*.
 # 
 # The input variables include
-# * **```position```** the coordinates of the cell for which you would like to determine the heuristic value.
+# * **```position```** the coordinates of the cell for which you would like to determine 
+# the heuristic value.
 # * **```goal_position```** the coordinates of the goal cell
 
 # In[21]:
