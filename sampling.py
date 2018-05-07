@@ -69,18 +69,20 @@ class LocVolume():
         z = tuple(np.clip((center[2] - dz, center[2] + dz), zmin, zmax))
         return z
     
-    def localgoal(self, *path):
+    def localgoal(self, path, ind):
         p1 = self._c
         loc_g = []
-        for p2 in path:
+        while not loc_g and ind < len(path):
+            p2 = path[ind+1]
             if self._locPrism.crosses(p1,p2):
                 loc_g = self._locPrism.intersection(p1,p2)
                 break
             else:
                 p1 = p2
+                ind += 1
         if loc_g ==[]:
             print("Failed to find a new local goal!")
-        return loc_g
+        return loc_g, ind
         
     
     @staticmethod
@@ -141,6 +143,53 @@ class LocVolume():
             # i.e. grid[0:5, 20:26, 2:7] = True
     
         return voxmap
+    
+    def create_localvoxmap(self, data, voxel_size):
+        """
+        Returns a grid representation of a 3D configuration space inside 
+        local Voxel based on given obstacle data.
+        The `voxel_size` argument sets the resolution of the voxel map. 
+        """
+        
+        # minimum and maximum north coordinates
+        north_min = self._nmin
+        north_max = self._nmax
+        # minimum and maximum east coordinates
+        east_min = self._emin
+        east_max = self._emax
+    
+        alt_min, alt_max = self._height
+        
+        print("N")
+        print("min = {0}, max = {1}\n".format(north_min, north_max))
+        
+        print("E")
+        print("min = {0}, max = {1}\n".format(east_min, east_max))
+        
+        print("Z")
+        print("min = {0}, max = {1}".format(alt_min, alt_max))
+        print()
+        
+        # given the minimum and maximum coordinates we can
+        # calculate the size of the grid.
+        north_size = int(np.ceil((north_max - north_min))) // voxel_size
+        east_size = int(np.ceil((east_max - east_min))) // voxel_size
+        alt_size = int(alt_max) // voxel_size
+    
+        loc_voxmap = np.zeros((north_size, east_size, alt_size), dtype=np.bool)
+        for i in range(data.shape[0]):
+            north, east, alt, d_north, d_east, d_alt = data[i,:]
+            obstacle = [
+                    int(np.clip((north - d_north - north_min)// voxel_size, north_min, north_max)),
+                    int(np.clip((north + d_north - north_min)// voxel_size, north_min, north_max)),
+                    int(np.clip((east - d_east - east_min)// voxel_size, east_min, east_max)),
+                    int(np.clip((east + d_east - east_min)// voxel_size, east_min, east_max)),
+                    int(np.clip((alt + d_alt)//voxel_size, alt_min, alt_max))
+                    ]
+            loc_voxmap[obstacle[0]:obstacle[1], obstacle[2]:obstacle[3],
+                    0:obstacle[4]] = True
+    
+        return loc_voxmap
         
         
 
