@@ -45,8 +45,8 @@ class LocVolume():
         self._vol = voxel_size
         self._c = center #(tuple(N,E,Z))
         self._corners = self.basecorners(data, center, d_n/2, d_e/2) #([p1,p2,p3,p4])
-        self._height = self.prismheight(data, center, d_z/2) #tuple(z_bottom, z_top)
-        self._locPrism = Sampler.Prism(self._corners, self._height)
+        self._height = self.prismheight(center, d_z/2) #tuple(z_bottom, z_top)
+        self._locPrism = Prism(self._corners, self._height)
         self._nmin = self._corners[0][0]
         self._nmax = self._corners[1][0]
         self._emin = self._corners[0][1]
@@ -61,7 +61,7 @@ class LocVolume():
         p4 = tuple(np.clip((center[0] - dn, center[1] + de),(nmin, emin), (nmax, emax)))
         return [p1, p2, p3, p4]
     
-    def prismheight(self, center, dz, drone_height, zmin = 0):
+    def prismheight(self, center, dz, zmin = 0):
         """
         Output: tuple (z_bottom, z_top)
         """
